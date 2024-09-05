@@ -1,14 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Query from "./Query";
+import Query from "./MakeQueryPopup";
 
-const Service = () => {
+const ServiceDetail = () => {
   const { serviceId } = useParams();
   const [service, setService] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [showPopup, setShowPopup] = useState(false);
 
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchService = async () => {
       try {
@@ -49,10 +51,10 @@ const Service = () => {
   }
 
   const handleReserveNowClick = () => {
-    navigate('/reservation', { state: { serviceName: service.serviceName } });
+    navigate('/make-reservation', { state: { serviceName: service.serviceName } });
   };
 
-  // Function to open the popup
+  
   const handleOpenPopup = () => {
     setShowPopup(true);
   };
@@ -85,18 +87,7 @@ const Service = () => {
           {service.features && service.features.map((feature, index) => (
             <div key={index} className="flex items-start">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-6 w-6 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414L9 14.414 5.293 10.707a1 1 0 011.414-1.414L9 11.586l6.293-6.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              
               </div>
               <div className="ml-4">
                 <h3 className="text-lg font-medium text-gray-800">{feature.serviceName}</h3>
@@ -130,4 +121,4 @@ const Service = () => {
   );
 };
 
-export default Service;
+export default ServiceDetail;

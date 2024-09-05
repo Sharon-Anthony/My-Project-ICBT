@@ -7,6 +7,7 @@ const Reservation = () => {
     const location = useLocation();
     const [serviceName, setServiceName] = useState(location.state?.serviceName || '');
     const [userName, setUserName] = useState('');
+    const [people, setPeople] = useState('');
     const [email, setEmail] = useState('');
     const [date, setDate] = useState('');
     const [timeSlots, setTimeSlots] = useState([]);
@@ -20,9 +21,7 @@ const Reservation = () => {
     const [allServices, setAllServices] = useState([]);
 
     
-
-      // Fetch booked times based on selected date and service name
-    useEffect(() => {
+  useEffect(() => {
     if (date && serviceName) {
         const fetchBookedTimes = async () => {
             setLoading(true);
@@ -95,16 +94,21 @@ const convertTo24HourFormat = (time12h) => {
 const submitHandler = (event) => {
   event.preventDefault();
   
-  if (!serviceName || !userName || !email || !date || !selectedTime) {
+  if (!serviceName || !userName || !email || !date || !selectedTime || !people ) {
     alert("Please fill all fields and select a time.");
     return;
   }
   
+  if(people>10){
+    alert("Minimum 10 peoples allowed")
+  }
+
   const time24h = convertTo24HourFormat(selectedTime);
   
   const reservationData = {
     serviceName,
     userName,
+    people,
     email,
     date,
     time: time24h
@@ -125,8 +129,6 @@ const submitHandler = (event) => {
       let errorMessage = "An error occurred";
 
       if (error.response) {
-        // Request made and server responded with a status code
-        // that falls out of the range of 2xx
         switch (error.response.status) {
           case 400:
             errorMessage = "Invalid input. Please check your data.";
@@ -174,7 +176,7 @@ const handleChange = (event) => {
 };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg relative w-[1000px]">
+        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-6 text-center">Reservation Form</h2>
             <form onSubmit={submitHandler} className="space-y-4">
                             <div>
@@ -201,6 +203,17 @@ const handleChange = (event) => {
                         type="text"
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
+                        className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700">People:</label>
+                    <input
+                        type="number"
+                        value={people}
+                        placeholder='Minimum 10'
+                        onChange={(e) => setPeople(e.target.value)}
                         className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
