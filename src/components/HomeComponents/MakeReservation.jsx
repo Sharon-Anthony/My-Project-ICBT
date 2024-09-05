@@ -8,7 +8,6 @@ const Reservation = () => {
     const [serviceName, setServiceName] = useState(location.state?.serviceName || '');
     const [userName, setUserName] = useState('');
     const [people, setPeople] = useState('');
-    const [type, setType] = useState('');
     const [email, setEmail] = useState('');
     const [date, setDate] = useState('');
     const [timeSlots, setTimeSlots] = useState([]);
@@ -20,54 +19,47 @@ const Reservation = () => {
     const [reservedTimes, setReservedTimes] = useState('');
     const [loading, setLoading] = useState(false);
     const [allServices, setAllServices] = useState([]);
-    const [user, setUser] = useState("");
-    const [loggedIn, setLoggedIn] = useState(false);
 
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-            setLoggedIn(true);
-            setUserName(storedUser.username);
-            setEmail(storedUser.email);
-        }
-    }, []);
     
-    useEffect(() => {
-        if (date && serviceName) {
-            const fetchBookedTimes = async () => {
-                setLoading(true);
-                try {
-                    const response = await axios.get("http://localhost:8081/reservations", {
-                        params: { serviceName, date }
-                    });
+  useEffect(() => {
+    if (date && serviceName) {
+        const fetchBookedTimes = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get("http://localhost:8081/reservations", {
+                    params: { serviceName, date }
+                });
+                
+                // Convert booked times to h:mm A format
+                const booked = response.data.map(res => {
+                    const [hours, minutes] = res.time.split(':');
+                    let period = 'AM';
+                    let hours12 = parseInt(hours, 10);
                     
-                    const booked = response.data.map(res => {
-                        const [hours, minutes] = res.time.split(':');
-                        let period = 'AM';
-                        let hours12 = parseInt(hours, 10);
-                        
-                        if (hours12 >= 12) {
-                            period = 'PM';
-                            hours12 = hours12 > 12 ? hours12 - 12 : hours12;
-                        } else if (hours12 === 0) {
-                            hours12 = 12;
-                        }
+                    if (hours12 >= 12) {
+                        period = 'PM';
+                        hours12 = hours12 > 12 ? hours12 - 12 : hours12;
+                    } else if (hours12 === 0) {
+                        hours12 = 12;
+                    }
 
-                        return `${hours12}:${minutes} ${period}`;
-                    });
+                    return `${hours12}:${minutes} ${period}`;
+                });
 
-                    console.log("Booked Times:", booked);
-                    setReservedTimes(booked);
-                } catch (error) {
-                    console.error("Error fetching booked times:", error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchBookedTimes();
-        }
-    }, [date, serviceName]);
+                console.log("Booked Times:", booked);
+                setReservedTimes(booked);
+            } catch (error) {
+                console.error("Error fetching booked times:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBookedTimes();
+    }
+}, [date, serviceName]);
+
+
+
 
     useEffect(() => {
         if (date) {
@@ -85,125 +77,125 @@ const Reservation = () => {
         }
     };
 
-    const convertTo24HourFormat = (time12h) => {
-        const [time, modifier] = time12h.split(' ');
-        let [hours, minutes] = time.split(':');
-        
-        if (modifier === 'PM' && hours !== '12') {
-            hours = parseInt(hours, 10) + 12;
-        } else if (modifier === 'AM' && hours === '12') {
-            hours = 0;
-        }
-        
-        return `${hours.toString().padStart(2, '0')}:${minutes}`;
-    };
-
-    const submitHandler = (event) => {
-        event.preventDefault();
-        
-        if (!serviceName || !userName || !email || !date || !selectedTime || !people || !type) {
-            alert("Please fill all fields and select a time.");
-            return;
-        }
-        
-        if (people > 10) {
-            alert("Minimum 10 people allowed");
-        }
-
-        const time24h = convertTo24HourFormat(selectedTime);
-        
-        const reservationData = {
-            serviceName,
-            userName,
-            people,
-            type,
-            email,
-            date,
-            time: time24h
-        };
-
-        setLoading(true);
-
-        axios
-            .post("http://localhost:8081/reservation", reservationData)
-            .then((response) => {
-                setLoading(false); 
-                console.log("Reservation added successfully:", response.data);
-                alert("Reservation added successfully");
-                
-            })
-            .catch((error) => {
-                setLoading(false); 
-                let errorMessage = "An error occurred";
-
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 400:
-                            errorMessage = "Invalid input. Please check your data.";
-                            break;
-                        case 401:
-                            errorMessage = "Unauthorized. Please log in.";
-                            break;
-                        case 404:
-                            errorMessage = "Resource not found.";
-                            break;
-                        case 500:
-                            errorMessage = "Server error. Please try again later.";
-                            break;
-                        default:
-                            errorMessage = "An unexpected error occurred.";
-                    }
-                } else if (error.request) {
-                    errorMessage = "No response from server. Please check your network connection.";
-                } else {
-                    errorMessage = "Error setting up request: " + error.message;
-                }
-
-                console.error("Error adding Reservation:", errorMessage);
-                alert("Error adding Reservation: " + errorMessage);
-            });
-    };
-
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await axios.get('http://localhost:8081/services');
-                const services = response.data.map(service => service.serviceName);
-                console.log('Fetched services:', services);
-                setAllServices(services);
-            } catch (error) {
-                console.error('Error fetching services:', error);
-            }
-        };
-
-        fetchServices();
-    }, []);
+  // Function to convert 12-hour time format to 24-hour format
+const convertTo24HourFormat = (time12h) => {
+  const [time, modifier] = time12h.split(' ');
+  let [hours, minutes] = time.split(':');
   
-    const handleChange = (event) => {
-        setServiceName(event.target.value);
+  if (modifier === 'PM' && hours !== '12') {
+      hours = parseInt(hours, 10) + 12;
+  } else if (modifier === 'AM' && hours === '12') {
+      hours = 0;
+  }
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes}`;
+};
+
+const submitHandler = (event) => {
+  event.preventDefault();
+  
+  if (!serviceName || !userName || !email || !date || !selectedTime || !people ) {
+    alert("Please fill all fields and select a time.");
+    return;
+  }
+  
+  if(people>10){
+    alert("Minimum 10 peoples allowed")
+  }
+
+  const time24h = convertTo24HourFormat(selectedTime);
+  
+  const reservationData = {
+    serviceName,
+    userName,
+    people,
+    email,
+    date,
+    time: time24h
+  };
+
+  setLoading(true);
+
+  axios
+    .post("http://localhost:8081/reservation", reservationData)
+    .then((response) => {
+      setLoading(false); 
+      console.log("Reservation added successfully:", response.data);
+      alert("Reservation added successfully");
+      
+    })
+    .catch((error) => {
+      setLoading(false); 
+      let errorMessage = "An error occurred";
+
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            errorMessage = "Invalid input. Please check your data.";
+            break;
+          case 401:
+            errorMessage = "Unauthorized. Please log in.";
+            break;
+          case 404:
+            errorMessage = "Resource not found.";
+            break;
+          case 500:
+            errorMessage = "Server error. Please try again later.";
+            break;
+          default:
+            errorMessage = "An unexpected error occurred.";
+        }
+      } else if (error.request) {
+        errorMessage = "No response from server. Please check your network connection.";
+      } else {
+        errorMessage = "Error setting up request: " + error.message;
+      }
+
+      console.error("Error adding Reservation:", errorMessage);
+      alert("Error adding Reservation: " + errorMessage);
+    });
+};
+
+useEffect(() => {
+    const fetchServices = async () => {
+        try {
+            const response = await axios.get('http://localhost:8081/services');
+            const services = response.data.map(service => service.serviceName); // Access serviceName property
+            console.log('Fetched services:', services);
+            setAllServices(services);
+        } catch (error) {
+            console.error('Error fetching services:', error);
+        }
     };
+
+    fetchServices();
+}, []);
+  
+const handleChange = (event) => {
+    setServiceName(event.target.value);
+};
 
     return (
-        <div className="bg-white items-center justify-center p-6 rounded-lg shadow-lg relative w-[500px]">
+        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-2xl font-semibold mb-6 text-center">Reservation Form</h2>
             <form onSubmit={submitHandler} className="space-y-4">
-                <div>
+                            <div>
                     <label className="block text-gray-700">Service Name:</label>
                     <div className="relative">
-                        <select
-                            value={serviceName}
-                            onChange={handleChange}
-                            className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        >
-                            <option value="" disabled>Select a service</option>
-                            {allServices.map((service, index) => (
-                                <option key={index} value={service}>
-                                    {service}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+            <select
+                value={serviceName}
+                onChange={handleChange}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+            >
+                <option value="" disabled>Select a service</option>
+                {allServices.map((service, index) => (
+                    <option key={index} value={service}>
+                        {service}
+                    </option>
+                ))}
+            </select>
+        </div>
                 </div>
                 <div>
                     <label className="block text-gray-700">User Name:</label>
@@ -225,19 +217,6 @@ const Reservation = () => {
                         className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Type:</label>
-                    <select 
-                        value={type}
-                        onChange={(e) => setType(e.target.value)}
-                        className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required
-                    >
-                        <option value="" disabled>Select a type</option>
-                        <option value="Dine in">Dine in</option>
-                        <option value="Delivery">Delivery</option>
-                    </select>
                 </div>
                 <div>
                     <label className="block text-gray-700">Email:</label>

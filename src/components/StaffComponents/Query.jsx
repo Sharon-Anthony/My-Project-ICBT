@@ -8,7 +8,7 @@ function Query() {
     const [queries, setQueries] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedQuery, setSelectedQuery] = useState(null);
-    const queriesPerPage = 5; 
+    const queriesPerPage = 5; // Corrected variable name to be more descriptive
 
     const indexOfLastQuery = currentPage * queriesPerPage;
     const indexOfFirstQuery = indexOfLastQuery - queriesPerPage;
@@ -19,10 +19,11 @@ function Query() {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    
+    // Filtering logic for queries
     const filteredQueries = queries.filter(query => {
         const lowerSearchTerm = searchTerm.toLowerCase();
         
+        // Ensure that all relevant fields are properly checked
         const queryIdMatch = typeof query.queryId === 'string' && query.queryId.toLowerCase().includes(lowerSearchTerm);
         const serviceNameMatch = typeof query.serviceName === 'string' && query.serviceName.toLowerCase().includes(lowerSearchTerm);
         const emailMatch = typeof query.email === 'string' && query.email.toLowerCase().includes(lowerSearchTerm);

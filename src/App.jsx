@@ -32,10 +32,6 @@ import MakeReservation from './components/HomeComponents/MakeReservation'
 import UserDashboard from './components/UserComponents/UserDashboard';
 import UserLayout from './components/UserComponents/UserLayout';
 import UserReservationList from './components/UserComponents/UserReservationList';
-import UpdateProfile from './components/UserComponents/Updateprofile';
-import UserQuery from './components/UserComponents/UserQuery';
-import UpdateuserQuery from './components/UserComponents/UpdateuserQuery';
-import UserUpdateReservation from './components/UserComponents/UserUpdateReservation';
 
 
 function App() {
@@ -203,46 +199,6 @@ function App() {
         <ProtectedRoute allowedRoles={['u']}>
             <UserLayout>
                 <UserReservationList   />
-            </UserLayout>
-        </ProtectedRoute>
-    }
-/>
-<Route 
-    path="/update-profile" 
-    element={
-        <ProtectedRoute allowedRoles={['u']}>
-            <UserLayout>
-                <UpdateProfile/>
-            </UserLayout>
-        </ProtectedRoute>
-    }
-/>
-<Route 
-    path="/user-query-list" 
-    element={
-        <ProtectedRoute allowedRoles={['u']}>
-            <UserLayout>
-                <UserQuery />
-            </UserLayout>
-        </ProtectedRoute>
-    }
-/>
-<Route 
-    path="/update-user-query-list" 
-    element={
-        <ProtectedRoute allowedRoles={['u']}>
-            <UserLayout>
-                <UpdateuserQuery />
-            </UserLayout>
-        </ProtectedRoute>
-    }
-/>
-<Route 
-    path="/update-user-reservation-list" 
-    element={
-        <ProtectedRoute allowedRoles={['u']}>
-            <UserLayout>
-                <UserUpdateReservation />
             </UserLayout>
         </ProtectedRoute>
     }

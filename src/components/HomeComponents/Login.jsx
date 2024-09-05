@@ -13,18 +13,20 @@ const Login = ({ setShowPopup, onLogin }) => {
     const [errors, setErrors] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
 
+    // Check if the user is already logged in
     useEffect(() => {
         axios.get("http://localhost:8081/checkSession", {
-            withCredentials: true, 
+            withCredentials: true, // Ensure cookies are sent with the request
         })
         .then((response) => {
             if (response.status === 200 && response.data) {
-                onLogin(response.data); 
-                setShowPopup(false); 
+                onLogin(response.data); // If session is valid, log in the user automatically
+                setShowPopup(false); // Close the login popup
             }
         })
         .catch((error) => {
             console.log("No active session:", error);
+            // No active session, continue with the login flow
         });
     }, [onLogin, setShowPopup]);
 
@@ -54,7 +56,7 @@ const Login = ({ setShowPopup, onLogin }) => {
         if (validateForm()) {
             axios.post("http://localhost:8081/login", formData, {
                 headers: { "Content-Type": "application/json" },
-                withCredentials: true, 
+                withCredentials: true, // Ensure cookies are sent with the request
             })
             .then((response) => {
                 console.log("User logged in successfully:", response.data);
@@ -62,7 +64,7 @@ const Login = ({ setShowPopup, onLogin }) => {
                 setTimeout(() => {
                     setShowSuccess(false);
                     setShowPopup(false);
-                    onLogin(response.data); 
+                    onLogin(response.data); // Call onLogin with user data
                 }, 1900);
             })
             .catch((error) => {

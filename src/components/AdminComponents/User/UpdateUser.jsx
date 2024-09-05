@@ -29,6 +29,7 @@ function UpdateUser() {
     const handleSubmit = (e) => {
         e.preventDefault();
     
+        // Assuming userId is part of formData or is available in scope
         const userId = userToEdit.userId;
     
         axios.put(`http://localhost:8081/user/${userId}`, formData)

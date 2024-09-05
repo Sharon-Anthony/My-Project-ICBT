@@ -113,7 +113,6 @@ const Navigationbar = () => {
           <div className="group inline-block">
           <label
             className="text-yellow-500 cursor-pointer"
-            onClick={handleProfileClick}
           >
             Hi! {user.username}
           </label>

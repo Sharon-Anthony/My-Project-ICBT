@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
 
 const UserDashboard = () => {
     const [user, setUser] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -20,47 +16,7 @@ const UserDashboard = () => {
         return <div>Loading...</div>; 
     }
 
-    const handleEditClick = (user) => {
-        navigate('/update-profile', { state: { user } });
-    };
 
-     const handleDeleteClick = () => {
-        axios.post('http://localhost:8081/logout', {}, { withCredentials: true })
-            .then(() => {
-                onLogout(); 
-                navigate('/'); 
-            })
-            .catch((error) => {
-                console.error("Error logging out:", error.response || error.message || error);
-                alert("Logout failed. Please try again.");
-            });
-
-        const userId = user?.userId;
-    
-        if (!userId) {
-            alert("User ID not found!");
-            return;
-        }
-    
-        axios.delete(`http://localhost:8081/user/${userId}`)
-            .then(() => {
-                // Remove the user from localStorage
-                localStorage.removeItem("user");
-                setUser(null);
-                alert("User deleted successfully!");
-                navigate('/');  // Redirect to the homepage or login page
-            })
-            .catch((error) => {
-                console.error("There was an error deleting the user:", error);
-                alert("Failed to delete user. Please try again.");
-            });
-    };
-
-    const onLogout = () => {
-        console.log("User logged out");
-        localStorage.removeItem("user"); 
-    };
-    
     return (
         <div className="min-h-screen bg-gray-100 p-6 w-[1000px]">
             <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-6">
@@ -69,18 +25,9 @@ const UserDashboard = () => {
                         <h1 className="text-2xl font-semibold text-gray-800">Welcome, {user.username}</h1>
                         <p className="text-sm text-gray-500">Tue, 07 June 2022</p>
                     </div>
-                    <div className="flex space-x-2">
-                        <button 
-                            onClick={() => handleEditClick(user)}
-                            className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 focus:outline-none"
-                        >
+                    <div>
+                        <button className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 focus:outline-none">
                             Edit
-                        </button>
-                        <button 
-                            onClick={handleDeleteClick}
-                            className="bg-red-500 text-white py-2 px-4 rounded-lg shadow hover:bg-red-600 focus:outline-none"
-                        >
-                            Delete
                         </button>
                     </div>
                 </div>
@@ -154,4 +101,5 @@ const UserDashboard = () => {
     );
 };
 
-export default UserDashboard;
+export default UserDashboard; 
+//hey i'm not using usercontext

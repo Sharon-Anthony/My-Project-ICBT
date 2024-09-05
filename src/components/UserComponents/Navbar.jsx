@@ -39,13 +39,13 @@ function Navbar() {
             </div>
 
             <div className="flex items-center space-x-4">
-                <a href="/" className="flex items-center text-yellow-300 hover:text-blue-100">
-                    Home
+                <a href="#" className="flex items-center text-gray-300 hover:text-blue-100">
+                    My Profile
                 </a>
 
                 <div className="w-px h-6 bg-gray-400 dark:bg-gray-700"></div>
 
-                <a href="#" className="flex items-center text-yellow-300 hover:text-blue-100" 
+                <a href="#" className="flex items-center text-gray-300 hover:text-blue-100" 
                     onClick={handleLogoutButtonClick}
                 >
                     Logout
