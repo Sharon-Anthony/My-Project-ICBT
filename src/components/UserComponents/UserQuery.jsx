@@ -2,41 +2,53 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 import axios from 'axios';
-import StaffPopup from './StaffPopup';
+//import StaffPopup from './StaffPopup';
 
 function Query() {
     const [queries, setQueries] = useState([]);
+    const [user, setUser] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedQuery, setSelectedQuery] = useState(null);
-    const queriesPerPage = 5; 
+    const queriesPerPage = 5; // Corrected variable name to be more descriptive
 
     const indexOfLastQuery = currentPage * queriesPerPage;
     const indexOfFirstQuery = indexOfLastQuery - queriesPerPage;
     const currentQueries = queries.slice(indexOfFirstQuery, indexOfLastQuery);
+    const [filteredQueries, setFilteredQueries] = useState([]);
     
     const totalPages = Math.ceil(queries.length / queriesPerPage);
     const pageNumbers = [...Array(totalPages).keys()].map(num => num + 1);
 
     const [searchTerm, setSearchTerm] = useState('');
 
+
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+            setUser(storedUser);
+        } else {
+            console.log("No user found, redirecting to login...");
+        }
+    }, []);
+
+    useEffect(() => {
+        if (user) {
+            const filtered = queries.filter(query  =>
+                query.email === user.email &&
+                (query.serviceName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                query.query.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                query.response.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+            setFilteredQueries(filtered);
+        }
+    }, [queries, user, searchTerm]);
+
     
-    const filteredQueries = queries.filter(query => {
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        
-        const queryIdMatch = typeof query.queryId === 'string' && query.queryId.toLowerCase().includes(lowerSearchTerm);
-        const serviceNameMatch = typeof query.serviceName === 'string' && query.serviceName.toLowerCase().includes(lowerSearchTerm);
-        const emailMatch = typeof query.email === 'string' && query.email.toLowerCase().includes(lowerSearchTerm);
-        const queryTextMatch = typeof query.query === 'string' && query.query.toLowerCase().includes(lowerSearchTerm); // Assuming query field is a string
-        const responseMatch = typeof query.response === 'string' && query.response.toLowerCase().includes(lowerSearchTerm);
-        
-        return queryIdMatch || serviceNameMatch || emailMatch || queryTextMatch || responseMatch;
-    });
 
     const navigate = useNavigate();
 
-    // Handle navigation to edit page
     const handleEditClick = (query) => {
-        navigate('/query-update', { state: { query: query } }); // Placeholder route
+        navigate('/update-user-query-list', { state: { query: query } }); 
     };
 
     useEffect(() => {
@@ -61,7 +73,9 @@ function Query() {
 
     return (
         <div className='h-screen pt-10 relative w-[1000px]'>
+                <h1 className="text-3xl font-bold text-gray-800 mb-6">My Reservations</h1>
             <div className="flex items-center space-x-2 justify-end mt-10">
+                
                 <div className="relative flex">
                     <input
                         type="text"

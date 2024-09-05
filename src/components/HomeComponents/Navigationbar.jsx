@@ -19,14 +19,13 @@ const Navigationbar = () => {
             setLoggedIn(true);
         }
     }, []);
-
     console.log("useridis:-"+user.userId);
     
     const handleLogoutButtonClick = () => {
         axios.post('http://localhost:8081/logout', {}, { withCredentials: true })
             .then(() => {
-                onLogout(); // Trigger any additional logout actions
-                navigate('/'); // Use react-router-dom's navigate
+                onLogout(); 
+                navigate('/'); 
             })
             .catch((error) => {
                 console.error("Error logging out:", error);
@@ -36,7 +35,7 @@ const Navigationbar = () => {
 
     const onLogout = () => {
         console.log("User logged out");
-        localStorage.removeItem("user"); // Clear user info from localStorage
+        localStorage.removeItem("user"); 
         setLoggedIn(false);
     };
 
@@ -46,7 +45,7 @@ const Navigationbar = () => {
 
     const handleLogin = (user) => {
         console.log(user); 
-        localStorage.setItem("user", JSON.stringify(user)); // Store user info in localStorage
+        localStorage.setItem("user", JSON.stringify(user)); 
         setUser(user); 
         setLoggedIn(true);
         setShowPopup(false);
@@ -66,11 +65,11 @@ const Navigationbar = () => {
         const firstLetter = user.userId.charAt(0).toLowerCase();
     
         if (firstLetter === 'u') {
-            navigate('/user-dashboard');
+            navigate('/user-dashboard', { state: { user } });
         } else if (firstLetter === 'a') {
-            navigate('/admin-dashboard');
+            navigate('/admin-dashboard', { state: { user } });
         } else if (firstLetter === 's') {
-            navigate('/staff-dashboard');
+            navigate('/staff-dashboard', { state: { user } });
         } else {
             alert("Invalid user ID format");
         }
@@ -87,7 +86,7 @@ const Navigationbar = () => {
                 top: window.pageYOffset + offsetPosition,
                 behavior: "smooth"
             });
-            setMenu(false); // Close the menu after navigation in mobile view
+            setMenu(false); 
         }
     };
 
@@ -114,6 +113,7 @@ const Navigationbar = () => {
           <div className="group inline-block">
           <label
             className="text-yellow-500 cursor-pointer"
+            onClick={handleProfileClick}
           >
             Hi! {user.username}
           </label>
@@ -122,7 +122,7 @@ const Navigationbar = () => {
           <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden group-hover:block transition ease-in-out duration-150">
             <div className="py-1">
               <a
-                href="#profile"
+                href=""
                 onClick={handleProfileClick}
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               >

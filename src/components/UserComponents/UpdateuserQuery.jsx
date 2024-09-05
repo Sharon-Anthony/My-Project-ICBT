@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Alert } from '@material-tailwind/react';
 
-function UpdateUser() {
+function UpdateUserQuery() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const userToEdit = location.state?.user || {};
+    const queryToEdit = location.state?.query || {};
 
     const [formData, setFormData] = useState({
-        username: userToEdit.username || '',
-        email: userToEdit.email || '',
-        password: userToEdit.password || '',
-        address: userToEdit.address || '',
-        phoneNumber: userToEdit.phoneNumber || '',
+        serviceName: queryToEdit.serviceName || '',
+        email: queryToEdit.email || '',
+        query: queryToEdit.query || '',
+        response: queryToEdit.response || '',
     });
 
     const handleChange = (e) => {
@@ -24,36 +22,31 @@ function UpdateUser() {
         });
     };
 
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
-    
-        const userId = userToEdit.userId;
-    
-        axios.put(`http://localhost:8081/user/${userId}`, formData)
+
+        axios.put(`http://localhost:8081/query/${queryToEdit.queryId}`, formData)
             .then(response => {
-                // Handle successful response
-                console.log('User updated successfully:', response.data);
-                alert("User updated successfully")
+                console.log('Query updated successfully:', response.data);
+                alert("Query updated successfully");
+                navigate('/user-query-list'); 
             })
             .catch(error => {
-                // Handle error response
-                console.error('There was an error updating the user:', error);
+                console.error('There was an error updating the Query:', error);
             });
     };
-    
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 relative w-[1000px]">
-            <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg ">
-                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Update User</h2>
+            <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
+                <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Update Query</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">User Name</label>
+                        <label className="block text-gray-700 text-sm font-medium mb-1">Service Name</label>
                         <input
                             type="text"
-                            name="username"
-                            value={formData.username}
+                            name="serviceName"
+                            value={formData.serviceName}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                             required
@@ -67,40 +60,29 @@ function UpdateUser() {
                             value={formData.email}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                            required
+                            disabled
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Address</label>
+                        <label className="block text-gray-700 text-sm font-medium mb-1">Query</label>
                         <input
                             type="text"
-                            name="address"
-                            value={formData.address}
+                            name="query"
+                            value={formData.query}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                             required
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Phone Number</label>
-                        <input
-                            type="text"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
+                        <label className="block text-gray-700 text-sm font-medium mb-1">Response</label>
+                        <textarea
+                            name="response"
+                            value={formData.response}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                            required
+                            rows="5" 
+                            disabled
                         />
                     </div>
                     <div className="mt-6">
@@ -108,7 +90,7 @@ function UpdateUser() {
                             type="submit"
                             className="w-full px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
                         >
-                            Update User
+                            Update Query
                         </button>
                     </div>
                 </form>
@@ -117,4 +99,4 @@ function UpdateUser() {
     );
 }
 
-export default UpdateUser;
+export default UpdateUserQuery;

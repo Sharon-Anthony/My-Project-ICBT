@@ -3,21 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useLocation } from "react-router-dom";
 
-const Reservation = () => {
+const UserUpdateReservation = () => {
     const location = useLocation();
-    const [serviceName, setServiceName] = useState(location.state?.serviceName || '');
+    const reservationToEdit = location.state?.reservation || {};
+
+    const [serviceName, setServiceName] = useState(location.state?.serviceName || reservationToEdit.serviceName || '');
     const [userName, setUserName] = useState('');
-    const [people, setPeople] = useState('');
-    const [type, setType] = useState('');
+    const [people, setPeople] = useState(reservationToEdit.people || '');
+    const [type, setType] = useState(reservationToEdit.type || '');
     const [email, setEmail] = useState('');
-    const [date, setDate] = useState('');
+    const [date, setDate] = useState(reservationToEdit.date || '');
     const [timeSlots, setTimeSlots] = useState([]);
-    const [selectedTime, setSelectedTime] = useState('');
+    const [selectedTime, setSelectedTime] = useState(reservationToEdit.time || '');
     const [availableTimes, setAvailableTimes] = useState([
         "10:15 AM", "10:30 AM", "10:45 AM", "12:00 PM", "12:15 PM",
         "12:30 PM", "01:00 PM", "01:15 PM", "01:30 PM", "02:00 PM"
     ]);
-    const [reservedTimes, setReservedTimes] = useState('');
+    const [reservedTimes, setReservedTimes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [allServices, setAllServices] = useState([]);
     const [user, setUser] = useState("");
@@ -106,12 +108,13 @@ const Reservation = () => {
             return;
         }
         
-        if (people > 10) {
+        if (people < 10) {
             alert("Minimum 10 people allowed");
+            return;
         }
 
         const time24h = convertTo24HourFormat(selectedTime);
-        
+
         const reservationData = {
             serviceName,
             userName,
@@ -124,13 +127,13 @@ const Reservation = () => {
 
         setLoading(true);
 
-        axios
-            .post("http://localhost:8081/reservation", reservationData)
+        const reservationId= reservationToEdit.reservationId;
+
+        axios.put(`http://localhost:8081/reservation/${reservationId}`, reservationData)
             .then((response) => {
                 setLoading(false); 
-                console.log("Reservation added successfully:", response.data);
-                alert("Reservation added successfully");
-                
+                console.log("Reservation updated successfully:", response.data);
+                alert("Reservation updated successfully");
             })
             .catch((error) => {
                 setLoading(false); 
@@ -159,8 +162,8 @@ const Reservation = () => {
                     errorMessage = "Error setting up request: " + error.message;
                 }
 
-                console.error("Error adding Reservation:", errorMessage);
-                alert("Error adding Reservation: " + errorMessage);
+                console.error("Error updating reservation:", errorMessage);
+                alert("Error updating reservation: " + errorMessage);
             });
     };
 
@@ -184,8 +187,8 @@ const Reservation = () => {
     };
 
     return (
-        <div className="bg-white items-center justify-center p-6 rounded-lg shadow-lg relative w-[500px]">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Reservation Form</h2>
+        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg relative w-[1000px]">
+            <h2 className="text-2xl font-semibold mb-6 text-center">Update Reservation</h2>
             <form onSubmit={submitHandler} className="space-y-4">
                 <div>
                     <label className="block text-gray-700">Service Name:</label>
@@ -243,7 +246,8 @@ const Reservation = () => {
                     <label className="block text-gray-700">Email:</label>
                     <input
                         type="email"
-                        value={email}
+                        value
+={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full mt-2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
@@ -283,7 +287,7 @@ const Reservation = () => {
                     type="submit"
                     className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200"
                 >
-                    Submit Reservation
+                    Update
                     
                 </button>
             </form>
@@ -300,4 +304,5 @@ const Reservation = () => {
     );
 };
 
-export default Reservation;
+export default UserUpdateReservation;
+//here only username and email only passed correctly to the fileds not others passed can u please fix the issue and don't touch any other functions or design 
