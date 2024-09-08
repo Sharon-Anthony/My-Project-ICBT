@@ -10,12 +10,13 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { BriefcaseIcon, UserGroupIcon } from '@heroicons/react/16/solid';
+import { BriefcaseIcon, ChatBubbleBottomCenterIcon, DocumentCurrencyDollarIcon, UserGroupIcon } from '@heroicons/react/16/solid';
 import axios from 'axios';
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const DashboardCard = ({ icon, title, value }) => (
-  <div className="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-4 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
+  <div className="bg-gray-900  shadow-lg rounded-md flex items-center justify-between p-4 border-b-4  dark:border-gray-600 text-white font-medium group">
     <div className="flex justify-center items-center w-16 h-16 bg-white rounded-full transition-all duration-300 transform group-hover:rotate-12">
       <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out">
         {icon}
@@ -34,6 +35,7 @@ const Dashboard = () => {
   const [userCount, setUserCount] = useState(0);
   const [reservationCount, setReservationCount] = useState(0);
   const [queryCount, setQueryCount] = useState(0);
+  
 
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -51,6 +53,7 @@ const Dashboard = () => {
   
     fetchUserCount();
   }, []);
+  
 
   useEffect(() => {
     const fetchReservationCount = async () => {
@@ -90,21 +93,19 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8081/user'); // Ensure this is the correct API endpoint
+        const response = await fetch('http://localhost:8081/reservation'); 
         const data = await response.json();
+    
+        console.log('API Response:', data); 
   
-        console.log('API Response:', data); // Log the response to see its structure
-  
-        // Assuming your data is an array of objects with `date` and `numberOfOrders` properties
-        const labels = data.map(item => item.date); // Extract dates for labels
-        const ordersData = data.map(item => item.numberOfOrders); // Extract order numbers for the dataset
-  
-        // Update the chart data
+        const labels = data.map(item => item.date); 
+        const ordersData = data.map(item => item.people); 
+        
         setChartData({
           labels,
           datasets: [
             {
-              label: 'Orders Trend',
+              label: 'Reservations Trend',
               data: ordersData,
               borderColor: '#3b82f6',
               backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -131,13 +132,13 @@ const Dashboard = () => {
       tooltip: {
         callbacks: {
           label: function (tooltipItem) {
-            return `Value: ${tooltipItem.raw}`;
+            return `People: ${tooltipItem.raw}`;
           },
         },
       },
     },
   };
-
+  
   return (
     <div className="p-6 bg-gray-100 min-h-screen space-y-6 shadow-md rounded-lg p-4 mt-6 relative w-[1000px]">
       <div className="flex items-center space-x-3 mb-6">
@@ -147,22 +148,22 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white shadow-md rounded-lg p-4 mt-6 text-center">
         <DashboardCard
-          icon={<BriefcaseIcon className="h-8 w-8 text-gray-800" />}
+          icon={<UserGroupIcon className="h-8 w-8 text-gray-800" />}
           title="Users"
           value={userCount}
         />
         <DashboardCard
-          icon={<UserGroupIcon className="h-8 w-8 text-gray-800" />}
+          icon={<DocumentCurrencyDollarIcon className="h-8 w-8 text-gray-800" />}
           title="Reservations"
           value={reservationCount}
         />
         <DashboardCard
-          icon={<path strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />}
+          icon={<DocumentCurrencyDollarIcon className="h-8 w-8 text-gray-800"/>}
           title="Pending reservations"
-          value="$11,257"
+          value="1"
         />
         <DashboardCard
-          icon={<path strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />}
+          icon={<ChatBubbleBottomCenterIcon className="h-8 w-8 text-gray-800"/>}
           title="Quries"
           value={queryCount}
         />

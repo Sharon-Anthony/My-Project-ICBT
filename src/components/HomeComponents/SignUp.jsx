@@ -16,33 +16,11 @@ const Signup = ({ setShowPopup }) => {
     });
     const [errors, setErrors] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
-    
-
-    const handleLoginClick = () => {
-        setCurrentForm("login");
-    };
-
-    const handleClose = () => {
-        setShowPopup(false);
-    };
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.username) newErrors.username = "Username is required";
-        if (!formData.email) newErrors.email = "Email is required";
-        if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
-        if (!formData.password) newErrors.password = "Password is required";
-        if (formData.password !== formData.confirmPassword)
-            newErrors.confirmPassword = "Passwords do not match";
-        if (!formData.phoneNumber) newErrors.phoneNumber = "Phone number is required";
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
+  
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validateForm()) {
@@ -68,12 +46,33 @@ const Signup = ({ setShowPopup }) => {
                         }));
                     } else {
                         console.error("Error adding user:", error);
-                        alert("Error adding user");
+                        alert("Singup Failed");
                     }
                 });
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!formData.username) newErrors.username = "Username is required";
+        if (!formData.email) newErrors.email = "Email is required";
+        if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
+        if (!formData.password) newErrors.password = "Password is required";
+        if (formData.password !== formData.confirmPassword)
+            newErrors.confirmPassword = "Passwords do not match";
+        if (!formData.address) newErrors.address = "Address is required";
+        if (!formData.phoneNumber) newErrors.phoneNumber = "Phone number is required";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleLoginClick = () => {
+        setCurrentForm("login");
+    };
+
+    const handleClose = () => {
+        setShowPopup(false);
+    };
     return (
         <>
             {currentForm === "signup" && (

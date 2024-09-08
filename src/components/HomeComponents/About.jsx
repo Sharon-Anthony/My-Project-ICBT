@@ -22,7 +22,7 @@ const AboutUsSection = ({id}) => {
             <img src={about}   alt=''
                             className='w-[300px] sm:w-[450px]
                     sm:scale-110 mx-auto spin ' />
-          </div>
+          </div>                   
         </div>
       </div>
     </section>

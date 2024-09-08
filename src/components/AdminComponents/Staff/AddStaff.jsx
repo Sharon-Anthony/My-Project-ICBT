@@ -20,7 +20,7 @@ function AddStaff({ onAddStaff }) {
     axios.get('http://localhost:8081/staff/count')
       .then(response => {
         const count = response.data;
-        const newUserId = `u${String(count + 1).padStart(3, '0')}`;
+        const newUserId = `s${String(count + 1).padStart(3, '0')}`;
         setUserId(newUserId);
       })
       .catch(error => console.error('Error fetching user count:', error));
@@ -122,7 +122,7 @@ function AddStaff({ onAddStaff }) {
           <div className="mt-6">
             <button
               type="submit"
-              className="w-full px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-4 py-2 bg-gray-900 text-white rounded-md  focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               Submit
             </button>

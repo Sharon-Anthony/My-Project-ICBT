@@ -29,17 +29,14 @@ function UpdateUser() {
     const handleSubmit = (e) => {
         e.preventDefault();
     
-        // Assuming userId is part of formData or is available in scope
         const userId = userToEdit.userId;
     
         axios.put(`http://localhost:8081/user/${userId}`, formData)
             .then(response => {
-                // Handle successful response
                 console.log('User updated successfully:', response.data);
                 alert("User updated successfully")
             })
             .catch(error => {
-                // Handle error response
                 console.error('There was an error updating the user:', error);
             });
     };
@@ -107,7 +104,7 @@ function UpdateUser() {
                     <div className="mt-6">
                         <button
                             type="submit"
-                            className="w-full px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            className="w-full px-4 py-2 bg-gray-900 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
                         >
                             Update User
                         </button>

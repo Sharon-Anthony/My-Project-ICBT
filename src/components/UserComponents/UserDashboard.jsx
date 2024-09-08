@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 const UserDashboard = () => {
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -16,6 +20,51 @@ const UserDashboard = () => {
         return <div>Loading...</div>; 
     }
 
+    const handleEditClick = (user) => {
+        navigate('/update-profile', { state: { user } });
+    };
+
+     const handleDeleteClick = () => {
+        axios.post('http://localhost:8081/logout', {}, { withCredentials: true })
+            .then(() => {
+                onLogout(); 
+                navigate('/'); 
+            })
+            .catch((error) => {
+                console.error("Error logging out:", error.response || error.message || error);
+                alert("Logout failed. Please try again.");
+            });
+
+        const userId = user?.userId;
+    
+        if (!userId) {
+            alert("User ID not found!");
+            return;
+        }
+    
+        axios.delete(`http://localhost:8081/user/${userId}`)
+            .then(() => {
+                localStorage.removeItem("user");
+                setUser(null);
+                alert("User deleted successfully!");
+                navigate('/');  
+            })
+            .catch((error) => {
+                console.error("There was an error deleting the user:", error);
+                alert("Failed to delete user. Please try again.");
+            });
+        
+    };
+
+    const onLogout = () => {
+        console.log("User logged out");
+        localStorage.removeItem("user"); 
+    };
+    
+    const getCurrentDate = () => {
+        const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+        return new Date().toLocaleDateString('en-US', options);
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 p-6 w-[1000px]">
@@ -23,16 +72,24 @@ const UserDashboard = () => {
                 <div className="flex justify-between items-center mb-6">
                     <div>
                         <h1 className="text-2xl font-semibold text-gray-800">Welcome, {user.username}</h1>
-                        <p className="text-sm text-gray-500">Tue, 07 June 2022</p>
+                        <p className="text-sm text-gray-500">{getCurrentDate()}</p>
                     </div>
-                    <div>
-                        <button className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 focus:outline-none">
+                    <div className="flex space-x-2">
+                        <button 
+                            onClick={() => handleEditClick(user)}
+                            className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 focus:outline-none"
+                        >
                             Edit
+                        </button>
+                        <button 
+                            onClick={handleDeleteClick}
+                            className="bg-red-500 text-white py-2 px-4 rounded-lg shadow hover:bg-red-600 focus:outline-none"
+                        >
+                            Delete
                         </button>
                     </div>
                 </div>
 
-                {/* Profile Section */}
                 <div className="flex items-center mb-6">
                     <img
                         className="w-24 h-24 rounded-full border-2 border-gray-200"
@@ -45,7 +102,6 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
-                {/* Form Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-gray-600 font-medium">User Name</label>
@@ -101,5 +157,4 @@ const UserDashboard = () => {
     );
 };
 
-export default UserDashboard; 
-//hey i'm not using usercontext
+export default UserDashboard;

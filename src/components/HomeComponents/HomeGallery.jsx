@@ -75,4 +75,3 @@ const HomeGallery = () => {
 };
 
 export default HomeGallery;
-//this is my final Homegallery componenet now what u have to do is if i hover the mouse on this entire component a arrow pointing right side should apper like saying Explore more and once i clicked the arrow i should be able to navigate the gallery component

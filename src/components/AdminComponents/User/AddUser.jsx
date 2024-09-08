@@ -1,106 +1,136 @@
-import { Select } from '@material-tailwind/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-
-function AddUser({onAddUser}) {
+function AddStaff({ onAddStaff }) {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
-    role: '',
     address: '',
     phoneNumber: '',
-    nic: '',
   });
+  const [userId, setUserId] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prevState => ({ ...prevState, [id]: value }));
   };
 
-  function handleSubmit(e) {
+  useEffect(() => {
+    axios.get('http://localhost:8081/staff/count')
+      .then(response => {
+        const count = response.data;
+        const newUserId = `a${String(count + 1).padStart(3, '0')}`;
+        setUserId(newUserId);
+      })
+      .catch(error => console.error('Error fetching user count:', error));
+  }, []);
+
+  useEffect(() => {
+    if (formData.username) {
+      const userId1 = userId;
+      const generatedEmail = `${userId1}-${formData.username}-ABCrestaurant@gmail.com`;
+      setFormData(prevState => ({ ...prevState, email: generatedEmail }));
+    }
+  }, [formData.username]);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    onAddUser(formData); // Pass form data to the parent component
-  }
-//u just forget everything keep it in ur mind this is my user
+
+    const dataToSend = {
+      ...formData,
+      phoneNumber: parseInt(formData.phoneNumber, 10),
+    };
+
+    axios.post('http://localhost:8081/admin', dataToSend)
+      .then(response => {
+        console.log('Staff added successfully:', response.data);
+        alert('Staff added successfully:');
+        if (onAddStaff) onAddStaff(response.data);
+      })
+      .catch(error => {
+        console.error('There was an error adding the staff:', error);
+        alert(error);
+      });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto bg-white p-5">
-      <form onSubmit={handleSubmit}>
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">User Name</label>
-            <input type="text" 
-            id="username" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="John" 
-            value={formData.username} 
-            onChange={handleChange} required />
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 relative w-[1000px]">
+      <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Add Admin</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-medium mb-1">User Name</label>
+            <input
+              type="text"
+              id="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="John"
+              required
+            />
           </div>
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email</label>
-            <input type="text" id="email" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="sfs@gmail.com" 
-            value={formData.email} 
-            onChange={handleChange} required />
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-medium mb-1">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="sfs@gmail.com"
+              required
+            />
           </div>
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Password</label>
-            <input type="password" id="password" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="password" 
-            value={formData.password} 
-            onChange={handleChange} required />
-          </div>  
-          <div>
-  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Role</label>
-  <select id="role"
-    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-    value={formData.role}
-    onChange={handleChange}
-    required
-  >
-    <option value="">Select Role</option>
-    <option value="admin">admin</option>
-    <option value="staff">staff</option>
-    <option value="user">user</option>
-  </select>
-</div>
-
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Address</label>
-            <input type="text" id="address" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="Address" 
-            value={formData.address} 
-            onChange={handleChange} required />
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-medium mb-1">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="password"
+              required
+            />
           </div>
-
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Phonenumber</label>
-            <input type="text" id="phoneNumber" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="phonenumber" 
-            value={formData.phoneNumber} 
-            onChange={handleChange} required />
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-medium mb-1">Address</label>
+            <input
+              type="text"
+              id="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="Address"
+              required
+            />
           </div>
-          <div>
-            <label  className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Nic</label>
-            <input type="text" id="nic" 
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            placeholder="nic" 
-            value={formData.nic} 
-            onChange={handleChange} required />
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-medium mb-1">Phone Number</label>
+            <input
+              type="text"
+              id="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="Phone number"
+              required
+            />
           </div>
-
-        <button type="submit" 
-        className="mt-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-       
-        >    
-        Submit</button>
-      </form>
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-gray-900 text-white rounded-md  focus:outline-none focus:ring-2 focus:ring-teal-500"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
 
-export default AddUser;
-//
+export default AddStaff;

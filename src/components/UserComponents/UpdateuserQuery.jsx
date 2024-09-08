@@ -24,7 +24,8 @@ function UpdateUserQuery() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        console.log('Submitting form with data:', formData);
+    
         axios.put(`http://localhost:8081/query/${queryToEdit.queryId}`, formData)
             .then(response => {
                 console.log('Query updated successfully:', response.data);
@@ -35,6 +36,7 @@ function UpdateUserQuery() {
                 console.error('There was an error updating the Query:', error);
             });
     };
+    
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 relative w-[1000px]">
@@ -65,30 +67,20 @@ function UpdateUserQuery() {
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-medium mb-1">Query</label>
-                        <input
-                            type="text"
+                        <textarea
                             name="query"
                             value={formData.query}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            rows="5" 
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-medium mb-1">Response</label>
-                        <textarea
-                            name="response"
-                            value={formData.response}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                            rows="5" 
-                            disabled
-                        />
-                    </div>
+                    
                     <div className="mt-6">
                         <button
                             type="submit"
-                            className="w-full px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            className="w-full px-4 py-2 bg-gray-900 text-white rounded-md  focus:outline-none focus:ring-2 focus:ring-teal-500"
                         >
                             Update Query
                         </button>

@@ -13,21 +13,19 @@ const Login = ({ setShowPopup, onLogin }) => {
     const [errors, setErrors] = useState({});
     const [showSuccess, setShowSuccess] = useState(false);
 
-    // Check if the user is already logged in
     useEffect(() => {
         axios.get("http://localhost:8081/checkSession", {
-            withCredentials: true, // Ensure cookies are sent with the request
+            withCredentials: true,
         })
-        .then((response) => {
-            if (response.status === 200 && response.data) {
-                onLogin(response.data); // If session is valid, log in the user automatically
-                setShowPopup(false); // Close the login popup
-            }
-        })
-        .catch((error) => {
-            console.log("No active session:", error);
-            // No active session, continue with the login flow
-        });
+            .then((response) => {
+                if (response.status === 200 && response.data) {
+                    onLogin(response.data);
+                    setShowPopup(false);
+                }
+            })
+            .catch((error) => {
+                console.log("No active session:", error);
+            });
     }, [onLogin, setShowPopup]);
 
     const handleClose = () => {
@@ -56,21 +54,21 @@ const Login = ({ setShowPopup, onLogin }) => {
         if (validateForm()) {
             axios.post("http://localhost:8081/login", formData, {
                 headers: { "Content-Type": "application/json" },
-                withCredentials: true, // Ensure cookies are sent with the request
+                withCredentials: true,
             })
-            .then((response) => {
-                console.log("User logged in successfully:", response.data);
-                setShowSuccess(true);
-                setTimeout(() => {
-                    setShowSuccess(false);
-                    setShowPopup(false);
-                    onLogin(response.data); // Call onLogin with user data
-                }, 1900);
-            })
-            .catch((error) => {
-                console.error("Error logging in:", error);
-                setErrors({ general: "Invalid credentials or server error" });
-            });
+                .then((response) => {
+                    console.log("User logged in successfully:", response.data);
+                    setShowSuccess(true);
+                    setTimeout(() => {
+                        setShowSuccess(false);
+                        setShowPopup(false);
+                        onLogin(response.data);
+                    }, 1900);
+                })
+                .catch((error) => {
+                    console.error("Error logging in:", error);
+                    setErrors({ general: "Invalid credentials or server error" });
+                });
         }
     };
 
@@ -105,21 +103,29 @@ const Login = ({ setShowPopup, onLogin }) => {
                                 value={formData[name]}
                                 onChange={handleChange}
                                 placeholder={`Enter ${label}`}
-                                className={`w-full rounded-lg border text-black ${
-                                    errors[name] ? "border-red-500" : "border-gray-300"
-                                } px-3 py-2`}
+                                className={`w-full rounded-lg border text-black ${errors[name] ? "border-red-500" : "border-gray-300"
+                                    } px-3 py-2`}
                             />
                             {errors[name] && (
                                 <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
                             )}
                         </div>
                     ))}
+                    
                     <button
                         type="submit"
                         className="w-full bg-gradient-to-r from-yellow-500 to-blue-600 text-white font-semibold py-2 rounded-lg hover:from-yellow-600 hover:to-blue-700 transition duration-200"
                     >
                         Login
                     </button>
+                    <div className="mt-4">
+                        <button
+                            className="text-blue-500 hover:underline"
+                            onClick={() => alert("Password recovery process here")}
+                        >
+                            Forgot Password?
+                        </button>
+                    </div>
                     {errors.general && (
                         <p className="text-red-500 text-1xl mt-1 text-center">{errors.general}</p>
                     )}
@@ -132,6 +138,7 @@ const Login = ({ setShowPopup, onLogin }) => {
                     >
                         Sign Up
                     </button>
+
                 </div>
                 {currentForm === "signup" && (
                     <Signup setShowPopup={setShowPopup} />

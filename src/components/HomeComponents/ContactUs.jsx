@@ -79,13 +79,3 @@ function ContactUs() {
 }
 
 export default ContactUs;
-//     Background Color:
-
-// Original: bg-gradient-to-r from-purple-400 via-pink-500 to-red-500
-// Updated: bg-gradient-to-r from-blue-500 via-green-500 to-teal-400
-// This updates the background gradient to use a blue-to-teal color scheme instead of purple-to-red.
-
-// Button Colors:
-
-// Original: bg-white text-purple-600 hover:bg-gray-200 hover:text-purple-800
-// Updated: bg-white text-blue-600 hover:bg-gray-200 hover:text-blue-800

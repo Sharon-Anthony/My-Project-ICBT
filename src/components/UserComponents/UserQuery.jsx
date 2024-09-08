@@ -51,11 +51,28 @@ function Query() {
         navigate('/update-user-query-list', { state: { query: query } }); 
     };
 
+    const handleDeleteClick = (queryId) => {
+        
+        if (window.confirm("Are you sure you want to delete this query?")) {
+            axios.delete(`http://localhost:8081/query/${queryId}`)
+                .then(() => {
+                    alert("Query deleted successfully!");
+                    setQueries(queries.filter(query => query.queryId !== queryId));
+                })
+                .catch((error) => {
+                    console.error("There was an error deleting the query:", error);
+                    alert("Failed to delete query. Please try again.");
+                });
+        }
+    };
+    
+
+
     useEffect(() => {
         axios.get("http://localhost:8081/query")
             .then((response) => {
                 if (response.status === 200 && response.data) {
-                    setQueries(response.data); // Update state with fetched data
+                    setQueries(response.data); 
                 }
             })
             .catch((error) => {
@@ -73,7 +90,7 @@ function Query() {
 
     return (
         <div className='h-screen pt-10 relative w-[1000px]'>
-                <h1 className="text-3xl font-bold text-gray-800 mb-6">My Reservations</h1>
+                <h1 className="text-3xl font-bold text-gray-800 mb-6">My Query</h1>
             <div className="flex items-center space-x-2 justify-end mt-10">
                 
                 <div className="relative flex">
@@ -122,7 +139,9 @@ function Query() {
                                     >
                                         <span className="material-icons-outlined text-[25px] leading-none">edit</span>
                                     </button>
-                                    <a href="#" className="text-gray-400 hover:text-gray-100 inline-flex items-center ml-2">
+                                    <a href="#"
+                                     onClick={() => handleDeleteClick(query.queryId)}
+                                    className="text-gray-400 hover:text-gray-100 inline-flex items-center ml-2">
                                         <span className="material-icons-round text-[25px] leading-none">delete_outline</span>
                                     </a>
                                 </td>
@@ -164,3 +183,4 @@ function Query() {
 }
 
 export default Query;
+//now do the same thing here also for the deletion

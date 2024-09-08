@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiRestaurant } from 'react-icons/bi';
-import { AiOutlineClose, AiOutlineMenuUnfold } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineLogout, AiOutlineMenuUnfold, AiOutlineProfile, AiOutlineUser } from "react-icons/ai";
 import Login from "./Login";
 import axios from "axios";
 
 const Navigationbar = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false);
-    const [user, setUser] = useState({ userId:"",email: "", username: "" });
+    const [user, setUser] = useState({ userId: "", email: "", username: "" });
     const [menu, setMenu] = useState(false);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
     const navigate = useNavigate();
+
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -19,13 +22,26 @@ const Navigationbar = () => {
             setLoggedIn(true);
         }
     }, []);
-    console.log("useridis:-"+user.userId);
-    
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownVisible(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleLogoutButtonClick = () => {
         axios.post('http://localhost:8081/logout', {}, { withCredentials: true })
             .then(() => {
-                onLogout(); 
-                navigate('/'); 
+                onLogout();
+                navigate('/');
             })
             .catch((error) => {
                 console.error("Error logging out:", error);
@@ -35,7 +51,7 @@ const Navigationbar = () => {
 
     const onLogout = () => {
         console.log("User logged out");
-        localStorage.removeItem("user"); 
+        localStorage.removeItem("user");
         setLoggedIn(false);
     };
 
@@ -44,26 +60,29 @@ const Navigationbar = () => {
     };
 
     const handleLogin = (user) => {
-        console.log(user); 
-        localStorage.setItem("user", JSON.stringify(user)); 
-        setUser(user); 
+        console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
         setLoggedIn(true);
         setShowPopup(false);
-        navigate('/'); 
+        navigate('/');
     };
 
     const closePopup = () => {
         setShowPopup(false);
-        navigate('/'); 
+        navigate('/');
     };
 
     const handleChange = () => {
         setMenu(!menu);
     };
+    const handleReservationsClick = () => {
+        navigate('/user-dashboard');
+    }
 
     const handleProfileClick = () => {
         const firstLetter = user.userId.charAt(0).toLowerCase();
-    
+
         if (firstLetter === 'u') {
             navigate('/user-dashboard', { state: { user } });
         } else if (firstLetter === 'a') {
@@ -78,15 +97,17 @@ const Navigationbar = () => {
     const handleScroll = (id) => {
         const element = document.getElementById(id);
         if (element) {
-            const offset = 60; 
+            const offset = 60;
             const elementPosition = element.getBoundingClientRect().top;
             const offsetPosition = elementPosition - offset;
-    
+
             window.scrollTo({
                 top: window.pageYOffset + offsetPosition,
                 behavior: "smooth"
             });
-            setMenu(false); 
+            setMenu(false);
+        } else {
+            navigate("/");
         }
     };
 
@@ -107,51 +128,48 @@ const Navigationbar = () => {
                         <a onClick={() => handleScroll("about")} className="hover:text-yellow-500 transition-all cursor-pointer">About</a>
                         <a onClick={() => handleScroll("gallery")} className="hover:text-yellow-500 transition-all cursor-pointer">Gallery</a>
                         <a onClick={() => handleScroll("contactUs")} className="hover:text-yellow-500 transition-all cursor-pointer">Contact Us</a>
-                        <div>
-                             {/*  */}
-                        {loggedIn ? (
-          <div className="group inline-block">
-          <label
-            className="text-yellow-500 cursor-pointer"
-          >
-            Hi! {user.username}
-          </label>
+                        <div ref={dropdownRef} className="relative">
+                            {loggedIn ? (
+                                <div>
+                                    <label
+                                        className="text-yellow-500 cursor-pointer"
+                                        onClick={() => setDropdownVisible(!dropdownVisible)}
+                                    >
+                                        Hi! {user.username}
+                                    </label>
 
-          {/* Dropdown Menu */}
-          <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden group-hover:block transition ease-in-out duration-150">
-            <div className="py-1">
-              <a
-                href=""
-                onClick={handleProfileClick}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              >
-                My profile
-              </a>
-              <a
-                href="#reservations"
-               // onClick={handleReservationsClick}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              >
-                My reservations
-              </a>
-              <a
-                href="#logout"
-                onClick={handleLogoutButtonClick}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-              >
-                Log out
-              </a>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <button
-          className="px-6 py-1 border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition-all rounded-full"
-          onClick={handleLoginButtonClick}
-        >
-          Login
-        </button>
-      )}
+                                    {dropdownVisible && (
+                                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transition ease-in-out duration-150">
+                                            <div className="py-1">
+                                                <a
+                                                    href=""
+                                                    onClick={handleProfileClick}
+                                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                                >
+                                                    <AiOutlineUser size={20} className="mr-2" />
+                                                    My profile
+                                                </a>
+                                                
+                                                <a
+                                                    href="#logout"
+                                                    onClick={handleLogoutButtonClick}
+                                                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                                >
+                                                    <AiOutlineLogout size={20} className="mr-2" />
+                                                    Log out
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <button
+                                    className="px-6 py-1 border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 transition-all rounded-full"
+                                    onClick={handleLoginButtonClick}
+                                >
+                                    Login
+                                </button>
+                            )}
                             {showPopup && <Login setShowPopup={setShowPopup} onLogin={handleLogin} />}
                         </div>
                     </nav>
@@ -173,10 +191,37 @@ const Navigationbar = () => {
                         <>
                             <label
                                 className="text-yellow-500"
-                                onClick={handleProfileClick}
+                                onClick={() => setDropdownVisible(!dropdownVisible)}
                             >
-                                Hi! {user.username} 
+                                Hi! {user.username}
                             </label>
+                            {dropdownVisible && (
+                                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none transition ease-in-out duration-150">
+                                    <div className="py-1">
+                                        <a
+                                            href=""
+                                            onClick={handleProfileClick}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                        >
+                                            My profile
+                                        </a>
+                                        <a
+                                            href="#reservations"
+                                             onClick={handleReservationsClick}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                        >
+                                            My reservations
+                                        </a>
+                                        <a
+                                            href="#logout"
+                                            onClick={handleLogoutButtonClick}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                        >
+                                            Log out
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
                         </>
                     ) : (
                         <button

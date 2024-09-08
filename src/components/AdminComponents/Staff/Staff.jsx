@@ -61,14 +61,29 @@ function Staff() {
         setSelectedUser(null);
     };
 
+    const handleDeleteClick = (userId) => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            axios.delete(`http://localhost:8081/user/${userId}`)
+                .then(() => {
+                    alert("User deleted successfully!");
+                    setUsers(users.filter(user => user.userId !== userId));
+                })
+                .catch((error) => {
+                    console.error("There was an error deleting the user:", error);
+                    alert("Failed to delete user. Please try again.");
+                });
+        }
+    };
+
 
     return (
-        <div className='h-screen pt-10 relative w-[1000px]'>
+        <div className=' p-6 bg-gray-100 min-h-screen space-y-6 shadow-md rounded-lg p-4 mt-6 relative w-[1000px]'>
+              <h1 className="text-4xl font-bold text-gray-800 ">Staff Management</h1>
             <div className="flex items-center space-x-2 justify-end mt-10">
                 <div className="relative flex">
                     <input
                         type="text"
-                        className="w-full max-w-xs rounded-md px-2 py-2 text-sm text-gray-600 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 pl-10"
+                        className="w-full max-w-xs rounded-md px-2 py-2 text-sm text-gray-600 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 pl-10"
                         placeholder="Search"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -81,9 +96,8 @@ function Staff() {
                 </div>
                 <div>
                     <button
-                        className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
-                        onClick={() => navigate('/add-staff')} // Navigate to /adduser on click
-                    >
+                        className="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-900"
+                        onClick={() => navigate('/add-staff')}                     >
                         Add Staff
                     </button>
                 </div>
@@ -121,12 +135,21 @@ function Staff() {
                                     >
                                         <span className="material-icons-outlined text-[25px] leading-none">edit</span>
                                     </button>
-                                    <a href="#" className="text-gray-400 hover:text-gray-100 inline-flex items-center ml-2">
+                                    <a href=""
+                                     onClick={() => handleDeleteClick(user.userId)}
+                                    className="text-gray-400 hover:text-gray-100 inline-flex items-center ml-2">
                                         <span className="material-icons-round text-[25px] leading-none">delete_outline</span>
                                     </a>
                                 </td>
                             </tr>
                         ))}
+                        {filteredUsers.length === 0 && (
+                            <tr>
+                                <td colSpan="10" className="p-4 text-center text-gray-300">
+                                    No staff found.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
                 <div className="flex justify-center space-x-2 mt-4">

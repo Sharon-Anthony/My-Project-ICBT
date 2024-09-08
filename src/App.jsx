@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-
 import './App.css'
 import Home from './components/HomeComponents/Home'
 import Navigationbar from './components/HomeComponents/Navigationbar'
@@ -32,9 +31,20 @@ import MakeReservation from './components/HomeComponents/MakeReservation'
 import UserDashboard from './components/UserComponents/UserDashboard';
 import UserLayout from './components/UserComponents/UserLayout';
 import UserReservationList from './components/UserComponents/UserReservationList';
+import UpdateProfile from './components/UserComponents/Updateprofile';
+import UserQuery from './components/UserComponents/UserQuery';
+import UpdateuserQuery from './components/UserComponents/UpdateuserQuery';
+import UserUpdateReservation from './components/UserComponents/UserUpdateReservation';
+import StaffUpdateReservation from './components/StaffComponents/StaffUpdateReservation';
+import Service from './components/AdminComponents/Service/Service';
+import HomeLayout from './components/HomeComponents/HomeLayout';
+import AddServices from './components/AdminComponents/Service/AddServices';
+import UpdateService from './components/AdminComponents/Service/UpdateServices';
 
 
 function App() {
+  
+
   return (
     <Router>
       <Routes>
@@ -55,8 +65,9 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/services/:serviceId" element={<ServiceDetail />} />
-        <Route path="/make-reservation" element={<MakeReservation/>} />
+        
+        <Route path="/services/:serviceId" element={<HomeLayout> <ServiceDetail /></HomeLayout>} />
+        <Route path="/make-reservation" element={<HomeLayout><MakeReservation/></HomeLayout>} />
 
         {/* Admin Routes */}
         <Route
@@ -130,11 +141,47 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={['a']}>
               <Layout>
-                {/* Placeholder for Report component */}
+                {/* */}
               </Layout>
             </ProtectedRoute>
           }
         />
+
+<Route
+          path="/admin-service"
+          element={
+            <ProtectedRoute allowedRoles={['a']}>
+              <Layout>
+                <Service/>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+
+<Route
+          path="/admin-add-service"
+          element={
+            <ProtectedRoute allowedRoles={['a']}>
+              <Layout>
+                <AddServices/>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+
+<Route
+          path="/update-service/:serviceId"
+          element={
+            <ProtectedRoute allowedRoles={['a']}>
+              <Layout>
+                <UpdateService/>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        
+        
 
 
         {/* Staff Routes */}
@@ -181,6 +228,18 @@ function App() {
         </ProtectedRoute>
     }
 />
+<Route 
+    path="/update-staff-reservation-list" 
+    element={
+        <ProtectedRoute allowedRoles={['s']}>
+            <StaffLayout>
+                <StaffUpdateReservation />
+            </StaffLayout>
+        </ProtectedRoute>
+    }
+/>
+
+
 
 {/* User */}
 <Route 
@@ -199,6 +258,46 @@ function App() {
         <ProtectedRoute allowedRoles={['u']}>
             <UserLayout>
                 <UserReservationList   />
+            </UserLayout>
+        </ProtectedRoute>
+    }
+/>
+<Route 
+    path="/update-profile" 
+    element={
+        <ProtectedRoute allowedRoles={['u']}>
+            <UserLayout>
+                <UpdateProfile/>
+            </UserLayout>
+        </ProtectedRoute>
+    }
+/>
+<Route 
+    path="/user-query-list" 
+    element={
+        <ProtectedRoute allowedRoles={['u']}>
+            <UserLayout>
+                <UserQuery />
+            </UserLayout>
+        </ProtectedRoute>
+    }
+/>
+<Route 
+    path="/update-user-query-list" 
+    element={
+        <ProtectedRoute allowedRoles={['u']}>
+            <UserLayout>
+                <UpdateuserQuery />
+            </UserLayout>
+        </ProtectedRoute>
+    }
+/>
+<Route 
+    path="/update-user-reservation-list" 
+    element={
+        <ProtectedRoute allowedRoles={['u']}>
+            <UserLayout>
+                <UserUpdateReservation />
             </UserLayout>
         </ProtectedRoute>
     }
