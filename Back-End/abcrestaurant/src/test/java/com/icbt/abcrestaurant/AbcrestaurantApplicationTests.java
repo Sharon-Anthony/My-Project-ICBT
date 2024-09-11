@@ -116,11 +116,11 @@ void testDeleteUserSuccess() {
 
 
 @Test
-void testUpdateUserSuccess() {
+void testUpdateUserfailed() {
 	User existingUser = new User(null, "u001", "sharon", 
 	"sharonanthonty@gmail.com", "1234", "86/19, Silver smith lane, colombo -12",
 	 775444649);
-	String userId = "u001";
+	String userId = "u003";
    User updatedUser = new User(null, "u001", "updated-sharon", 
    "updated-sharonanthonty@gmail.com", "updated-1234", "updated-86/19, Silver smith lane, colombo -12",
 	775444649);
@@ -129,8 +129,8 @@ void testUpdateUserSuccess() {
     when(userService.updateUser(userId, updatedUser)).thenReturn(updatedUser);
 
     ResponseEntity<?> response = userController.updateUser(userId, updatedUser);
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(updatedUser.getUsername(), ((User)response.getBody()).getUsername());
+	assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  
 }
 
 
